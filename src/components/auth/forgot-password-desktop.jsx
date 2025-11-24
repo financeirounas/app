@@ -1,0 +1,151 @@
+import { useState } from "react";
+import Button from "@/components/ui/buttons/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useTheme } from "@/context/theme-context";
+
+
+export default function ForgotPasswordDesktop() {
+
+  const { setThemeColor } = useTheme();
+  const [step, setStep] = useState("email");
+  const [loading, setLoading] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+
+  const isEmailValid = email.length > 3 && email.includes("@");
+  const isCodeValid = code.length >= 4; 
+
+    useEffect(() => {
+      setThemeColor("#0f3b2e27");
+    }, [setThemeColor]);
+
+  const handleSendCode = (e) => {
+    e.preventDefault();
+    if (!isEmailValid) return;
+
+    setLoading(true);
+
+    
+    setTimeout(() => {
+      setLoading(false);
+      setStep("code");
+    }, 800);
+  };
+
+  const handleValidateCode = (e) => {
+    e.preventDefault();
+    if (!isCodeValid) return;
+
+    setLoading(true);
+
+    
+    setTimeout(() => {
+      setLoading(false);
+      console.log("Código válido, seguir para redefinição de senha");
+    }, 800);
+  };
+
+  const onSubmit = step === "email" ? handleSendCode : handleValidateCode;
+  const isValid = step === "email" ? isEmailValid : isCodeValid;
+
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center px-6"
+      style={{ backgroundColor: "#0f3b2e27" }}
+    >
+      <div
+        className="
+          w-full max-w-lg bg-white rounded-3xl border border-slate-200
+          shadow-md px-10 py-12
+          focus-within:border-[#0F3B2E] focus-within:shadow-[0_0_0px_#0F3B2E]
+          transition-all
+        "
+      >
+        {/* Cabeçalho */}
+        <header className="mb-8">
+          <h1 className="text-3xl font-semibold text-[#0F3B2E]">
+            {step === "email" ? "Esqueceu sua senha?" : "Verifique seu e-mail"}
+          </h1>
+
+          {step === "email" ? (
+            <p className="text-sm text-slate-500 mt-2">
+              Informe seu e-mail institucional para enviarmos um código de
+              recuperação.
+            </p>
+          ) : (
+            <p className="text-sm text-slate-500 mt-2">
+              Enviamos um código de verificação para{" "}
+              <span className="font-medium text-slate-700">{email}</span>.  
+              Digite o código abaixo para continuar.
+            </p>
+          )}
+        </header>
+
+        {/* Formulário */}
+        <form className="space-y-6" onSubmit={onSubmit}>
+          {step === "email" ? (
+            <div>
+              <Label htmlFor="email">E-mail institucional</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu.nome@unas.org.br"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          ) : (
+            <div>
+              <Label htmlFor="code">Código de verificação</Label>
+              <Input
+                id="code"
+                type="text"
+                inputMode="numeric"
+                placeholder="Digite o código recebido"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+              />
+              <p className="text-xs text-slate-500 mt-2">
+                Não recebeu o código?{" "}
+                <button
+                  type="button"
+                  className="text-[#0F3B2E] font-medium underline underline-offset-2"
+                  onClick={handleSendCode}
+                >
+                  Reenviar código
+                </button>
+              </p>
+            </div>
+          )}
+
+          {/* Voltar para login */}
+          <div className="flex justify-start text-sm">
+            <a
+              href="/auth/login"
+              className="text-slate-500 hover:text-slate-700 transition-colors"
+            >
+              Voltar para o login
+            </a>
+          </div>
+
+          {/* Botão principal */}
+          <div className="pt-2">
+            <Button
+              type="submit"
+              loading={loading}
+              bg={isValid ? "primary" : "#F0F4F7"}
+              text={isValid ? "soft" : "#9CA3AF"}
+              shadow="none"
+              disabled={!isValid || loading}
+              className="w-full rounded-full py-3 text-[15px]"
+            >
+              {step === "email" ? "Enviar código" : "Validar código"}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
