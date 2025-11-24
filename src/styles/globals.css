@@ -9,12 +9,13 @@ html {
   font-family: var(--font-inter);
 }
 
-progress {
-  -webkit-appearance: none;
-  appearance: none;
-  border: none;
+progress::-webkit-progress-bar {
+  background-color: transparent;
 }
 
+progress::-webkit-progress-value {
+  background-color: transparent;
+}
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
