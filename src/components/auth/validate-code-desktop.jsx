@@ -1,5 +1,5 @@
 // components/auth/validate-code-desktop.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@/components/ui/buttons/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,7 @@ export default function ValidateCodeDesktop({ email = "" }) {
     setThemeColor("#0f3b2e27");
   }, [setThemeColor]);
 
-  
+
   // ex: 6 dígitos numéricos
   const isValid = code.trim().length === 6;
 
