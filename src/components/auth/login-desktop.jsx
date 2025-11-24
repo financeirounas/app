@@ -15,8 +15,6 @@ export default function LoginDesktop() {
   const [password, setPassword] = useState("");
 
   const isValid = email.length > 3 && password.length > 3;
-
-
     useEffect(() => {
       setThemeColor("#0f3b2e27");
     }, [setThemeColor]);
@@ -98,7 +96,6 @@ export default function LoginDesktop() {
             </Link>
           </div>
 
-          {/* Botão principal */}
           <div className="pt-2">
             <Button
               type="submit"
