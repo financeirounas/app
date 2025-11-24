@@ -10,11 +10,11 @@ html {
 }
 
 progress::-webkit-progress-bar {
-  background-color: transparent;
+  background-color: red;
 }
 
 progress::-webkit-progress-value {
-  background-color: transparent;
+  background-color: red;
 }
 :root {
   --background: oklch(1 0 0);
