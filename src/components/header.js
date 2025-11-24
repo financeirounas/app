@@ -1,5 +1,5 @@
 // components/Header.js
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme } from "@/context/theme-context";
 
 export default function Header() {
   const { themeColor, setThemeColor } = useTheme();
