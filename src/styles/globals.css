@@ -9,14 +9,11 @@ html {
   font-family: var(--font-inter);
 }
 
-#nprogress .bar {
-  background: transparent !important;
+progress {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
 }
-
-#nprogress .spinner {
-  display: none !important;
-}
-
 
 :root {
   --background: oklch(1 0 0);
