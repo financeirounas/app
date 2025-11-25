@@ -9,15 +9,18 @@ export default function MobileLayout({ children }) {
   const router = useRouter();
   const { colors, setThemeColor } = useTheme();
   
-  useEffect(() => {
-    setThemeColor(colors.background);
-  }, [colors, setThemeColor]);
+ 
 
   const success = colors.success || "#16a34a";
   const soft = colors.soft || "#ffffff";
   const surface = colors.surface || "#F6FBF6";
   const bg = colors.background || "#F2F6F2";
   const muted = colors.muted || "#9CA3AF";
+
+
+   useEffect(() => {
+    setThemeColor(colors.background);
+  }, [colors.background, setThemeColor]);
 
   const navItems = [
     { icon: <Home size={20} />, label: "Início", href: "/" },
