@@ -16,6 +16,7 @@ export default function ResetPasswordMobile() {
   const { setThemeColor } = useTheme();
   const passwordsMatch = password.length >= 6 && password === confirm;
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   
   useEffect(() => {
     setThemeColor("#0f3b2e27");
@@ -52,6 +53,9 @@ export default function ResetPasswordMobile() {
         console.error("Erro ao comunicar com a API Next.js:", err);
         setError("Erro ao comunicar com a API. Tente novamente.");
       });
+
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1000);
 
   };
 

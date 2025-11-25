@@ -17,6 +17,7 @@ export default function ResetPasswordDesktop() {
   const { setThemeColor } = useTheme();
   const passwordsMatch = password.length >= 6 && password === confirm;
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setThemeColor("#0f3b2e27");
