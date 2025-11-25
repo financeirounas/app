@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useTheme } from "@/context/theme-context";
 import { AppAlert } from "@/components/ui/app-alert";
+import { useRouter } from "next/router";
 
 export default function ResetPasswordDesktop() {
   const router = useRouter();
