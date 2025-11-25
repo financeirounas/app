@@ -19,8 +19,8 @@ export default function MobileLayout({ children }) {
 
 
    useEffect(() => {
-    setThemeColor(colors.background);
-  }, [colors.background, setThemeColor]);
+    setThemeColor(colors.success || "#16a34a");
+  }, [colors, setThemeColor]);
 
   const navItems = [
     { icon: <Home size={20} />, label: "Início", href: "/" },
