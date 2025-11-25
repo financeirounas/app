@@ -3,10 +3,15 @@ import { useTheme } from "@/context/theme-context";
 import { User, ArrowLeft, Home, BarChart2, CreditCard, Settings, Bell } from "lucide-react";
 import ButtonIcon from "@/components/ui/buttons/button-icon";
 import clsx from "clsx";
+import { useEffect } from "react";
 
 export default function MobileLayout({ children }) {
   const router = useRouter();
-  const { colors } = useTheme();
+  const { colors, setThemeColor } = useTheme();
+  
+  useEffect(() => {
+    setThemeColor(colors.background);
+  }, [colors, setThemeColor]);
 
   const success = colors.success || "#16a34a";
   const soft = colors.soft || "#ffffff";
