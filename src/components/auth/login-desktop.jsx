@@ -7,7 +7,14 @@ import { useTheme } from "@/context/theme-context";
 import Link from "next/link";
 
 export default function LoginDesktop() {
-  const {setThemeColor } = useTheme();
+  const { setThemeColor } = useTheme();
+
+  useEffect(() => {
+    setThemeColor("#0f3b2e27");
+  }, [setThemeColor]);
+
+
+
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -15,9 +22,6 @@ export default function LoginDesktop() {
   const [password, setPassword] = useState("");
 
   const isValid = email.length > 3 && password.length > 3;
-    useEffect(() => {
-      setThemeColor("#0f3b2e27");
-    }, [setThemeColor]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -40,16 +44,13 @@ export default function LoginDesktop() {
           transition-all
         "
       >
-        
         <header className="mb-8">
           <h1 className="text-3xl font-semibold text-[#0F3B2E]">
             Acessar conta
           </h1>
         </header>
 
-        
         <form className="space-y-6" onSubmit={handleSubmit}>
-        
           <div>
             <Label htmlFor="email">E-mail</Label>
             <Input
@@ -61,7 +62,6 @@ export default function LoginDesktop() {
             />
           </div>
 
-          
           <div>
             <Label htmlFor="password">Senha</Label>
             <div className="relative">
@@ -110,7 +110,6 @@ export default function LoginDesktop() {
             </Button>
           </div>
         </form>
-
 
         <p className="text-[11px] text-slate-500 text-center mt-8">
           Painel exclusivo para colaboradores e parceiros da UNAS.
