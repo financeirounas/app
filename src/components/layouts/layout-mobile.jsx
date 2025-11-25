@@ -74,9 +74,9 @@ export default function MobileLayout({ children }) {
       </main>
 
       <footer
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[94%] max-w-xl rounded-2xl shadow-lg"
+        className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[94%] max-w-xl rounded-4xl shadow-lg"
         style={{
-          background: "#ffffff13",
+          background: "#ffffff90",
           border: "1px solid rgba(0,0,0,0.04)",
         backdropFilter: "blur(10px)",
         }}
