@@ -1,19 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Button from "@/components/ui/buttons/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useTheme } from "@/context/theme-context";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { AppAlert } from "@/components/ui/app-alert";
 
 export default function LoginDesktop() {
   const { setThemeColor } = useTheme();
+  const router = useRouter();
 
   useEffect(() => {
     setThemeColor("#0f3b2e27");
   }, [setThemeColor]);
-
-
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -23,13 +24,40 @@ export default function LoginDesktop() {
 
   const isValid = email.length > 3 && password.length > 3;
 
+  const [error, setError] = useState(null);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isValid) return;
 
+    fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          router.push("/");
+        } else if (data.error) {
+          setError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao comunicar com a API Next.js:", err);
+        setError("Erro ao comunicar com a API. Tente novamente.");
+      });
+
     setLoading(true);
     setTimeout(() => setLoading(false), 1000);
   };
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
     <div
@@ -49,6 +77,12 @@ export default function LoginDesktop() {
             Acessar conta
           </h1>
         </header>
+
+        {error && (
+          <div className="mb-4">
+            <AppAlert type="error" title="Erro ao logar" message={error} />
+          </div>
+        )}
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>

@@ -4,15 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useTheme } from "@/context/theme-context";
-
+import { useRouter } from "next/router";
+import { AppAlert } from "@/components/ui/app-alert";
 export default function ResetPasswordMobile() {
+  const router = useRouter();
+  const token = router.query.token;
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [show1, setShow1] = useState(false);
   const [show2, setShow2] = useState(false);
   const { setThemeColor } = useTheme();
   const passwordsMatch = password.length >= 6 && password === confirm;
-  
+  const [error, setError] = useState(null);
   
   useEffect(() => {
     setThemeColor("#0f3b2e27");
@@ -21,15 +24,40 @@ export default function ResetPasswordMobile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!passwordsMatch) return;
+    if (!token){
+      setError("Token na url inválido ou ausente.");
+      router.push("/auth/forgot-password");
+      return;
+    }
+    
+    if (!passwordsMatch){
+      setError("As senhas não coincidem ou são muito curtas.");
+      return;
+    };
 
-    // TODO: chamar API
-    console.log("Senha redefinida!");
+    fetch("/api/auth/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, confirm, token }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          router.push("/");
+        } else if (data.error) {
+          setError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao comunicar com a API Next.js:", err);
+        setError("Erro ao comunicar com a API. Tente novamente.");
+      });
+
   };
 
   return (
     <div className="min-h-screen flex flex-col px-6 py-10 bg-[#f6f7f8]">
-      {/* Header */}
+      
       <header className="mb-8">
         <h1 className="text-3xl font-semibold text-[#0F3B2E]">
           Nova senha
@@ -41,7 +69,15 @@ export default function ResetPasswordMobile() {
 
       <main className="flex-1">
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Senha */}
+          {error && (
+                      <div className="mb-4">
+                        <AppAlert
+                          type="error"
+                          title="Erro ao tentar recuperar senha"
+                          message={error}
+                        />
+                      </div>
+                    )}
           <div>
             <Label>Nova senha</Label>
             <div className="relative">
@@ -62,7 +98,7 @@ export default function ResetPasswordMobile() {
             </div>
           </div>
 
-          {/* Confirmar senha */}
+          
           <div>
             <Label>Confirmar senha</Label>
             <div className="relative">
@@ -89,7 +125,7 @@ export default function ResetPasswordMobile() {
             )}
           </div>
 
-          {/* Botão */}
+          
           <Button
             type="submit"
             disabled={!passwordsMatch}

@@ -1,37 +1,59 @@
-// components/auth/ResetPasswordDesktop.jsx
 import { useState, useEffect } from "react";
 import Button from "@/components/ui/buttons/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useTheme } from "@/context/theme-context";
+import { AppAlert } from "@/components/ui/app-alert";
 
 export default function ResetPasswordDesktop() {
-  const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
+  const token = router.query.token;
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [show1, setShow1] = useState(false);
+  const [show2, setShow2] = useState(false);
   const { setThemeColor } = useTheme();
+  const passwordsMatch = password.length >= 6 && password === confirm;
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setThemeColor("#0f3b2e27");
   }, [setThemeColor]);
 
-  const passwordsMatch = password.length >= 6 && password === confirm;
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!passwordsMatch) return;
+    if (!token) {
+      setError("Token na url inválido ou ausente.");
+      router.push("/auth/forgot-password");
+      return;
+    }
+
+    if (!passwordsMatch) {
+      setError("As senhas não coincidem ou são muito curtas.");
+      return;
+    }
+
+    fetch("/api/auth/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, confirm, token }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.reset_password_token) {
+          router.push("/");
+        } else if (data.error) {
+          setError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao comunicar com a API Next.js:", err);
+        setError("Erro ao comunicar com a API. Tente novamente.");
+      });
 
     setLoading(true);
-    // TODO: chamar API para redefinir a senha
-    setTimeout(() => {
-      setLoading(false);
-      // TODO: redirecionar para login
-      console.log("Senha redefinida com sucesso");
-    }, 800);
+    setTimeout(() => setLoading(false), 1000);
   };
 
   return (
@@ -58,13 +80,22 @@ export default function ResetPasswordDesktop() {
         </header>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Nova senha */}
+          {error && (
+            <div className="mb-4">
+              <AppAlert
+                type="error"
+                title="Erro ao tentar redefinir senha"
+                message={error}
+              />
+            </div>
+          )}
+
           <div>
             <Label htmlFor="password">Nova senha</Label>
             <div className="relative">
               <Input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={show1 ? "text" : "password"}
                 placeholder="Digite a nova senha"
                 className="pr-12"
                 value={password}
@@ -72,10 +103,10 @@ export default function ResetPasswordDesktop() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((v) => !v)}
+                onClick={() => setShow1((v) => !v)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0F3B2E]/70 active:scale-95 transition"
               >
-                {showPassword ? (
+                {show1 ? (
                   <EyeOff className="w-5 h-5" />
                 ) : (
                   <Eye className="w-5 h-5" />
@@ -86,14 +117,12 @@ export default function ResetPasswordDesktop() {
               Use ao menos 6 caracteres. Evite senhas fáceis de adivinhar.
             </p>
           </div>
-
-          {/* Confirmar senha */}
           <div>
             <Label htmlFor="confirm">Confirmar senha</Label>
             <div className="relative">
               <Input
                 id="confirm"
-                type={showConfirm ? "text" : "password"}
+                type={show2 ? "text" : "password"}
                 placeholder="Repita a nova senha"
                 className="pr-12"
                 value={confirm}
@@ -101,10 +130,10 @@ export default function ResetPasswordDesktop() {
               />
               <button
                 type="button"
-                onClick={() => setShowConfirm((v) => !v)}
+                onClick={() => setShow2((v) => !v)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#0F3B2E]/70 active:scale-95 transition"
               >
-                {showConfirm ? (
+                {show2 ? (
                   <EyeOff className="w-5 h-5" />
                 ) : (
                   <Eye className="w-5 h-5" />
@@ -118,7 +147,6 @@ export default function ResetPasswordDesktop() {
             )}
           </div>
 
-          {/* Voltar para login */}
           <div className="flex justify-start text-sm">
             <a
               href="/auth/login"
@@ -128,7 +156,6 @@ export default function ResetPasswordDesktop() {
             </a>
           </div>
 
-          {/* Botão principal */}
           <div className="pt-2">
             <Button
               type="submit"

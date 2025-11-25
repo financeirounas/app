@@ -3,49 +3,94 @@ import Button from "@/components/ui/buttons/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/context/theme-context";
-
+import { AppAlert } from "@/components/ui/app-alert";
+import { useRouter } from "next/router";
 
 export default function ForgotPasswordDesktop() {
-
+  const router = useRouter();
   const { setThemeColor } = useTheme();
+
   const [step, setStep] = useState("email");
+
   const [loading, setLoading] = useState(false);
 
   const [email, setEmail] = useState("");
+
   const [code, setCode] = useState("");
 
-  const isEmailValid = email.length > 3 && email.includes("@");
-  const isCodeValid = code.length >= 4; 
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-      setThemeColor("#0f3b2e27");
-    }, [setThemeColor]);
+  const isEmailValid = email.length > 3 && email.includes("@");
+
+  const isCodeValid = code.length >= 4;
+
+  useEffect(() => {
+    setThemeColor("#0f3b2e27");
+  }, [setThemeColor]);
 
   const handleSendCode = (e) => {
     e.preventDefault();
-    if (!isEmailValid) return;
+    if (!isEmailValid) {
+      setError("Por favor, insira um e-mail válido.");
+      return;
+    }
+
+    fetch("/api/auth/send-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          setStep("code");
+        } else if (data.error) {
+          setError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao comunicar com a API Next.js:", err);
+        setError("Erro ao comunicar com a API. Tente novamente.");
+      });
 
     setLoading(true);
-
-    
-    setTimeout(() => {
-      setLoading(false);
-      setStep("code");
-    }, 800);
+    setTimeout(() => setLoading(false), 1000);
   };
 
   const handleValidateCode = (e) => {
     e.preventDefault();
-    if (!isCodeValid) return;
+    if (!isCodeValid){
+      setError("Por favor, insira um código válido.");
+      return;
+    }
+    fetch("/api/auth/validate-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.reset_password_token) {
+          router.push(`/auth/reset-password?token=${data.reset_password_token}`);
+        } else if (data.error) {
+          setError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao comunicar com a API Next.js:", err);
+        setError("Erro ao comunicar com a API. Tente novamente.");
+      });
 
     setLoading(true);
-
-    
-    setTimeout(() => {
-      setLoading(false);
-      console.log("Código válido, seguir para redefinição de senha");
-    }, 800);
+    setTimeout(() => setLoading(false), 1000);
   };
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const onSubmit = step === "email" ? handleSendCode : handleValidateCode;
   const isValid = step === "email" ? isEmailValid : isCodeValid;
@@ -63,11 +108,19 @@ export default function ForgotPasswordDesktop() {
           transition-all
         "
       >
-        {/* Cabeçalho */}
         <header className="mb-8">
           <h1 className="text-3xl font-semibold text-[#0F3B2E]">
             {step === "email" ? "Esqueceu sua senha?" : "Verifique seu e-mail"}
           </h1>
+          {error && (
+            <div className="mb-4">
+              <AppAlert
+                type="error"
+                title="Erro ao tentar recuperar senha"
+                message={error}
+              />
+            </div>
+          )}
 
           {step === "email" ? (
             <p className="text-sm text-slate-500 mt-2">
@@ -77,13 +130,12 @@ export default function ForgotPasswordDesktop() {
           ) : (
             <p className="text-sm text-slate-500 mt-2">
               Enviamos um código de verificação para{" "}
-              <span className="font-medium text-slate-700">{email}</span>.  
+              <span className="font-medium text-slate-700">{email}</span>.
               Digite o código abaixo para continuar.
             </p>
           )}
         </header>
 
-        {/* Formulário */}
         <form className="space-y-6" onSubmit={onSubmit}>
           {step === "email" ? (
             <div>
@@ -119,8 +171,6 @@ export default function ForgotPasswordDesktop() {
               </p>
             </div>
           )}
-
-          {/* Voltar para login */}
           <div className="flex justify-start text-sm">
             <a
               href="/auth/login"
@@ -129,13 +179,11 @@ export default function ForgotPasswordDesktop() {
               Voltar para o login
             </a>
           </div>
-
-          {/* Botão principal */}
           <div className="pt-2">
             <Button
               type="submit"
               loading={loading}
-              bg={isValid ? "primary" : "#F0F4F7"}
+              bg={isValid ? "success" : "#F0F4F7"}
               text={isValid ? "soft" : "#9CA3AF"}
               shadow="none"
               disabled={!isValid || loading}
