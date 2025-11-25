@@ -17,8 +17,6 @@ export default async function handler(req, res) {
 
   try {
     const fastApiURL = `${process.env.SERVER_URL}/auth/login`;
-    console.log("Enviando requisição para FastAPI em:", fastApiURL);
-
     const response = await fetch(fastApiURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

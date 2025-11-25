@@ -43,7 +43,7 @@ export default function ResetPasswordDesktop() {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.ok && data.reset_password_token) {
+        if (data.ok) {
           router.push("/");
         } else if (data.error) {
           setError(data.error);

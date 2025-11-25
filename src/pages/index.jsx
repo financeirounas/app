@@ -2,7 +2,7 @@ export default function Home() {
 
   return (
     <main>
-      redirecionar para pagina de login
+      Olá, bem vindo!
     </main>
   );
 }
