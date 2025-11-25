@@ -8,16 +8,11 @@ import { useEffect } from "react";
 export default function MobileLayout({ children }) {
   const router = useRouter();
   const { colors, setThemeColor } = useTheme();
-  
- 
-
   const success = colors.success || "#16a34a";
   const soft = colors.soft || "#ffffff";
   const surface = colors.surface || "#F6FBF6";
   const bg = colors.background || "#F2F6F2";
   const muted = colors.muted || "#9CA3AF";
-
-
    useEffect(() => {
     setThemeColor(colors.success || "#16a34a");
   }, [colors, setThemeColor]);
@@ -59,16 +54,6 @@ export default function MobileLayout({ children }) {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm"
-            aria-label="Notificações"
-            onClick={() => router.push("/notifications")}
-            style={{ border: "1px solid rgba(0,0,0,0.04)" }}
-          >
-            <Bell size={18} color={success} />
-          </button>
-
           {canGoBack && (
             <ButtonIcon
               icon={<ArrowLeft size={18} />}
@@ -84,20 +69,19 @@ export default function MobileLayout({ children }) {
         </div>
       </header>
 
-      {/* Conteúdo - área com padding e cards brancos */}
       <main className="flex-1 px-5 pb-28">
           <div>{children}</div>
       </main>
 
-      {/* Bottom navigation (claro, com acento verde) */}
       <footer
-        className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[94%] max-w-xl rounded-2xl shadow-lg"
+        className="fixed bottom-12 left-1/2 -translate-x-1/2 w-[94%] max-w-xl rounded-2xl shadow-lg"
         style={{
-          background: "#ffffff",
+          background: "#ffffff13",
           border: "1px solid rgba(0,0,0,0.04)",
+        backdropFilter: "blur(10px)",
         }}
       >
-        <nav className="flex items-center justify-between px-4 py-3">
+        <nav className="flex items-center justify-between px-6 py-2">
           {navItems.map((item) => {
             const active = router.asPath === item.href;
             return (
@@ -117,7 +101,7 @@ export default function MobileLayout({ children }) {
                 >
                   {item.icon}
                 </div>
-                <span>{item.label}</span>
+                <span className="text-[15px]" >{item.label}</span>
               </button>
             );
           })}
